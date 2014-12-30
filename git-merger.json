@@ -1,4 +1,9 @@
 {
-	"User": "Username",
-	"Password": "Password"
+	"User": "git username",
+	"Password": "git pssword",
+	"MailUser": "mail user",
+	"MailPassword": "mail password",
+	"MailServer": "mail server",
+	"MailPort": 587,
+	"MailTo": "mail to adress"
 }

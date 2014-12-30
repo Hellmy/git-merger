@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./mail"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,8 +11,13 @@ import (
 )
 
 type Configuration struct {
-	User     string
-	Password string
+	User         string
+	Password     string
+	MailUser     string
+	MailPassword string
+	MailServer   string
+	MailPort     int
+	MailTo       string
 }
 
 func slice(args ...interface{}) []interface{} {
@@ -84,7 +90,8 @@ func checkoutBranch(rep *git.Repository, branchName string) error {
 
 func merge(rep *git.Repository, branchName string) {
 	if branch, err := mergeBranch(rep, branchName); err != nil {
-		fmt.Println(branchName+" error: ", err)
+		fmt.Println(branchName+" mergeBranch() error: ", err)
+		mailMessage(err.Error())
 	} else {
 		if err := commitMergedBranch(rep, branch); err != nil {
 			fmt.Println(branchName+" commmit error: ", err)
@@ -134,6 +141,16 @@ func mergeBranch(rep *git.Repository, branchName string) (*git.Branch, error) {
 	}
 
 	return ref.Branch(), mergeError
+}
+
+func mailMessage(body string) {
+	config, err := readConfig()
+	if err != nil {
+		return
+	}
+	emailUser := &mail.EmailUser{Username: config.MailUser, Password: config.MailPassword, EmailServer: config.MailServer, Port: config.MailPort}
+	smtpData := &mail.SmtpTemplateData{From: config.MailUser, To: config.MailTo, Subject: "git-merger Error", Body: body}
+	mail.Mail(*emailUser, *smtpData)
 }
 
 func commitMergedBranch(rep *git.Repository, branch *git.Branch) error {
