@@ -1,10 +1,10 @@
 package main
 
 import (
-	"./mail"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/hellmy/git-merger//mail"
 	"github.com/libgit2/git2go"
 	"os"
 	"time"
